@@ -7,9 +7,11 @@ void setup() {
   pinMode(pinBuz, OUTPUT);
 
   digitalWrite(pinLED, HIGH);
+  tone(pinBuz, 3000);
   delay(5000);
-  tone(pinBuz, 1000);
   digitalWrite(pinLED, LOW);
+  noTone(pinBuz);
+  
 }
 
 void loop() {

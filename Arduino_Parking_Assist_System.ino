@@ -1,20 +1,18 @@
-const pinLED = 7;
-const pinBuz = 8;
+const int pinLED = 7;
+const int pinBuz = 8;
 int md = 0;
 
 void setup() {
   pinMode(pinLED, OUTPUT);
   pinMode(pinBuz, OUTPUT);
+
+  digitalWrite(pinLED, HIGH);
+  delay(5000);
+  tone(pinBuz, 1000);
+  digitalWrite(pinLED, LOW);
 }
 
 void loop() {
-  
-  if(md == 0){
-    digitalWrite(pinLED, HIGH);
-    tone(pinBuz, 1000);
-    delay(1000);
-    digitalWrite(pinLED, LOW);
-    md = 1;
-  }
+
 
 }

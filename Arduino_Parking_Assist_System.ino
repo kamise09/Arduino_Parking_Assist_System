@@ -54,17 +54,24 @@ void setup() {
 }
 
 void loop() {
-  int adc = analogRead(pinIR);	
+  int adc1 = analogRead(pinIR);	
 	int adc2 = analogRead(pinIR2);
-	double voltage = x * (5.0 / 1023.0);
+	double voltage1 = adc1 * (5.0 / 1023.0);
+	double voltage2 = adc2 * (5.0 / 1023.0);
 
 	// Serial 출력
-	Serial.print("ADC: ");
-	Serial.print(adc);
-	Serial.print("\tVoltage: ");
-	Serial.print(voltage, 2);
-	Serial.print(" V\tDistance: ");
-	Serial.print(mmPrint(adc), 1);
+	Serial.print("ADC: "); 
+	Serial.print(adc1); 
+	Serial.print(", "); 
+	Serial.print(adc2);
+	Serial.print("\tVoltage: "); 
+	Serial.print(voltage1, 2); 
+	Serial.print(", "); 
+	Serial.print(voltage2, 2);
+	Serial.print(" V\tDistance: "); 
+	Serial.print(mmPrint(adc1), 1); 
+	Serial.print(", "); 
+	Serial.print(mmPrint(adc2), 1);
 	Serial.println(" mm");
 
 	rotateDegrees(90.0f);

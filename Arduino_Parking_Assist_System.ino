@@ -52,7 +52,7 @@ void setup() {
 	pinMode(IN4, OUTPUT);
 
 	disableCoils(); // 코일 초기화
-	Serial.begin(9600); // Serial 통신속도 설정
+	Serial.begin(115200); // Serial 통신속도 설정
 
 }
 
@@ -64,6 +64,7 @@ void loop() {
 	double voltage1 = adc1 * (5.0 / 1023.0);
 	double voltage2 = adc2 * (5.0 / 1023.0);
 
+	warning();
 	serialPrint(adc1, adc2, voltage1, voltage2);
 
 	rotateDegrees(90.0f);
@@ -122,7 +123,7 @@ double mmPrint(int x){
 
   float distanceCM = 2076.0 / (x - 11.0);// cm 변환 수식
 	
-	// 4cm 이하면 4로, 30cm 이상이면 3으로 고정 
+	// 4cm 이하면 4로, 30cm 이상이면 30으로 고정 
 	if (distanceCM < 4) distanceCM = 4;
 	if (distanceCM > 30) distanceCM = 30;
 	float distanceMM = distanceCM * 10.0;
@@ -141,8 +142,8 @@ void serialPrint(int p1, int p2, double p3, double p4){
 	Serial.print(", "); 
 	Serial.print(p4, 2);
 	Serial.print(" V\tDistance: "); 
-	Serial.print(mmPrint(adc1), 1); 
+	Serial.print(mmPrint(p1), 1); 
 	Serial.print(", "); 
-	Serial.print(mmPrint(adc2), 1);
+	Serial.print(mmPrint(p2), 1);
 	Serial.println(" mm");
 }

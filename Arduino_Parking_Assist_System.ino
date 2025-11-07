@@ -61,18 +61,15 @@ void setup() {
 }
 
 void loop() {
-
-	// 거리센서로 부터 값을 읽고 V로 변환후 저장
-	inpIR();
-	int RL;
+	int RL; inpIR();
 	serialPrint(adc1, adc2, voltage1, voltage2);
 	
 	// 로직구현 좌회전 + 우회전 -
 
-	if(adc1 < 30 || adc2 < 30){
+	if(adc1 < 300 || adc2 < 300){
 		delay(3000);
 		inpIR();
-		if(adc1 < 30 || adc2 < 30){
+		if(adc1 < 300 || adc2 < 300){
 			warning();
 
 			while(adc1 < 30 || adc2 < 30){
@@ -89,8 +86,6 @@ void loop() {
 void inpIR(){
 	adc1 = mmPrint(analogRead(pinIR));	
 	adc2 = mmPrint(analogRead(pinIR2));
-	voltage1 = adc1 * (5.0 / 1023.0);
-	voltage2 = adc2 * (5.0 / 1023.0);
 }
 
 // 1스텝 회전을 실행하는 함수 
@@ -156,10 +151,6 @@ void serialPrint(int p1, int p2, double p3, double p4){
 	Serial.print(p1); 
 	Serial.print(", "); 
 	Serial.print(p2);
-	Serial.print("\tVoltage: "); 
-	Serial.print(p3, 2); 
-	Serial.print(", "); 
-	Serial.print(p4, 2);
 	Serial.print(" V\tDistance: "); 
 	Serial.print(p1, 1); 
 	Serial.print(", "); 

@@ -2,14 +2,18 @@
 
 const int pinLED = 7; // LED핀
 const int pinBuz = 8; // 부저 핀
-const int pinIR = A0; // 거리센서1
-const int pinIR2 = A1;// 거리센서2
+const int pinIR = A0; // 거리센서1 - 왼쪽 센서가 보는 방향으로
+const int pinIR2 = A1;// 거리센서2 - 오른쪽 
 
 // 모터 드라이버 관련 핀 
 const int IN1 = 9; 
 const int IN2 = 10;
 const int IN3 = 11;
 const int IN4 = 12;
+
+// adc 
+int adc1, adc2 ;
+double voltage1, voltage2;
 
 // 스텝 구동을 위한 8단계 하프스텝 테이블 
 // 한 행은 스텝 1단계, 각 열은 IN1 ~ IN4
@@ -37,7 +41,7 @@ void disableCoils();
 void warning();
 void serialPrint(int p1, int p2, double p3, double p4);
 double mmPrint(int x);
-
+void inpIR();
 
 void setup() {
 
@@ -59,19 +63,34 @@ void setup() {
 void loop() {
 
 	// 거리센서로 부터 값을 읽고 V로 변환후 저장
-  int adc1 = analogRead(pinIR);	
-	int adc2 = analogRead(pinIR2);
-	double voltage1 = adc1 * (5.0 / 1023.0);
-	double voltage2 = adc2 * (5.0 / 1023.0);
-
-	warning();
+	inpIR();
+	int RL;
 	serialPrint(adc1, adc2, voltage1, voltage2);
+	
+	// 로직구현 좌회전 + 우회전 -
 
-	rotateDegrees(90.0f);
-	delay(1000);
-	rotateDegrees(-45.0f);
-	delay(1000);
+	if(adc1 < 30 || adc2 < 30){
+		delay(3000);
+		inpIR();
+		if(adc1 < 30 || adc2 < 30){
+			warning();
 
+			while(adc1 < 30 || adc2 < 30){
+				inpIR();
+				RL = (adc2-adc1)<0 ? -1:1;
+				rotateDegrees(RL);
+			}	
+		}
+	}
+
+	delay(100);
+}
+
+void inpIR(){
+	adc1 = mmPrint(analogRead(pinIR));	
+	adc2 = mmPrint(analogRead(pinIR2));
+	voltage1 = adc1 * (5.0 / 1023.0);
+	voltage2 = adc2 * (5.0 / 1023.0);
 }
 
 // 1스텝 회전을 실행하는 함수 
@@ -114,7 +133,7 @@ void disableCoils() {
 // 모터 동작 전 부저, LED 경고신호 작동 함수
 void warning(){
 	digitalWrite(pinLED, HIGH); tone(pinBuz, 3000);
-	delay(3000); // 3초간 작동
+	delay(1000); // 3초간 작동
   digitalWrite(pinLED, LOW); noTone(pinBuz);
 }
 
@@ -142,8 +161,8 @@ void serialPrint(int p1, int p2, double p3, double p4){
 	Serial.print(", "); 
 	Serial.print(p4, 2);
 	Serial.print(" V\tDistance: "); 
-	Serial.print(mmPrint(p1), 1); 
+	Serial.print(p1, 1); 
 	Serial.print(", "); 
-	Serial.print(mmPrint(p2), 1);
+	Serial.print(p2, 1);
 	Serial.println(" mm");
 }

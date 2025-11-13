@@ -39,7 +39,7 @@ void stepN(long steps, int dir);
 void rotateDegrees(float angle_deg);
 void disableCoils();
 void warning();
-void serialPrint(int p1, int p2, double p3, double p4);
+void serialPrint(int p1, int p2);
 double mmPrint(int x);
 void inpIR();
 
@@ -62,7 +62,7 @@ void setup() {
 
 void loop() {
 	int RL; inpIR();
-	serialPrint(adc1, adc2, voltage1, voltage2);
+	serialPrint(adc1, adc2);
 	
 	// 로직구현 좌회전 + 우회전 -
 
@@ -71,8 +71,7 @@ void loop() {
 		inpIR();
 		if(adc1 < 300 || adc2 < 300){
 			warning();
-
-			while(adc1 < 30 || adc2 < 30){
+			while(adc1 < 300 || adc2 < 300){
 				inpIR();
 				RL = (adc2-adc1)<0 ? -1:1;
 				rotateDegrees(RL);
@@ -146,11 +145,11 @@ double mmPrint(int x){
 }
 
 // 거리센서 값을 adc, V, mm 형태로 Serial출력
-void serialPrint(int p1, int p2, double p3, double p4){
+void serialPrint(int p1, int p2){
 	Serial.print("ADC: "); 
-	Serial.print(p1); 
+	Serial.print(analogRead(pinIR)); 
 	Serial.print(", "); 
-	Serial.print(p2);
+	Serial.print(analogRead(pinIR2));
 	Serial.print(" V\tDistance: "); 
 	Serial.print(p1, 1); 
 	Serial.print(", "); 

@@ -12,8 +12,7 @@ const int IN3 = 11;
 const int IN4 = 12;
 
 // adc 
-int adc1, adc2 ;
-double voltage1, voltage2;
+int adc1 = 300, adc2 = 300 ;
 
 // 스텝 구동을 위한 8단계 하프스텝 테이블 
 // 한 행은 스텝 1단계, 각 열은 IN1 ~ IN4
@@ -67,14 +66,14 @@ void loop() {
 	// 로직구현 좌회전 + 우회전 -
 
 	if(adc1 < 300 || adc2 < 300){
-		delay(3000);
+		delay(1000);
 		inpIR();
 		if(adc1 < 300 || adc2 < 300){
 			warning();
 			while(adc1 < 300 || adc2 < 300){
 				inpIR();
 				RL = (adc2-adc1)<0 ? -1:1;
-				rotateDegrees(RL);
+				rotateDegrees(RL*10);
 			}	
 		}
 	}
@@ -133,13 +132,14 @@ void warning(){
 
 // 거리센서 아날로그값을 mm 단위 로 변환하는 함수 
 double mmPrint(int x){
-
-  float distanceCM = 2076.0 / (x - 11.0);// cm 변환 수식
+	int t = x - 11.0;
+	if (t < 15) return 300; 
+  double distanceCM = 2076.0 / t;// cm 변환 수식
 	
 	// 4cm 이하면 4로, 30cm 이상이면 30으로 고정 
 	if (distanceCM < 4) distanceCM = 4;
 	if (distanceCM > 30) distanceCM = 30;
-	float distanceMM = distanceCM * 10.0;
+	double distanceMM = distanceCM * 10.0;
 
 	return distanceMM;
 }
@@ -150,9 +150,9 @@ void serialPrint(int p1, int p2){
 	Serial.print(analogRead(pinIR)); 
 	Serial.print(", "); 
 	Serial.print(analogRead(pinIR2));
-	Serial.print(" V\tDistance: "); 
-	Serial.print(p1, 1); 
+	Serial.print("\tDistance: "); 
+	Serial.print((double)p1, 1); 
 	Serial.print(", "); 
-	Serial.print(p2, 1);
+	Serial.print((double)p2, 1);
 	Serial.println(" mm");
 }

@@ -30,7 +30,7 @@ const int8_t seq[8][4] = {
 // 1회전당 스텝수, 각도-> 스텝 변환에 사용
 long STEPS_PER_REV = 2048;
 // 스텝사이 지연시간 설정, 모터속도 조절 변수
-unsigned int step_delay_us = 1600; 
+unsigned int step_delay_us = 2400; 
 
 // 필요 함수 정의
 void stepOnce(int dir);
@@ -60,20 +60,22 @@ void setup() {
 }
 
 void loop() {
+	
 	int RL; inpIR();
 	serialPrint(adc1, adc2);
 	
 	// 로직구현 좌회전 + 우회전 -
-
-	if(adc1 < 300 || adc2 < 300){
+	
+	if(adc1 < 200 || adc2 < 200){
 		delay(1000);
 		inpIR();
-		if(adc1 < 300 || adc2 < 300){
+		if(adc1 < 200 || adc2 < 200){
 			warning();
-			while(adc1 < 300 || adc2 < 300){
+			while(adc1 < 200 || adc2 < 200){
 				inpIR();
 				RL = (adc2-adc1)<0 ? -1:1;
 				rotateDegrees(RL*10);
+				serialPrint(adc1, adc2);
 			}	
 		}
 	}
@@ -133,12 +135,11 @@ void warning(){
 // 거리센서 아날로그값을 mm 단위 로 변환하는 함수 
 double mmPrint(int x){
 	int t = x - 11.0;
-	if (t < 15) return 300; 
+	if (t < 15) return 200; 
   double distanceCM = 2076.0 / t;// cm 변환 수식
 	
-	// 4cm 이하면 4로, 30cm 이상이면 30으로 고정 
 	if (distanceCM < 4) distanceCM = 4;
-	if (distanceCM > 30) distanceCM = 30;
+	if (distanceCM > 20) distanceCM = 20;
 	double distanceMM = distanceCM * 10.0;
 
 	return distanceMM;

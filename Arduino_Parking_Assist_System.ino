@@ -13,6 +13,7 @@ const int IN4 = 12;
 
 // adc 
 int adc1 = 200, adc2 = 200, cnt = 0;
+int raw_adc1, raw_adc2;
 
 // 스텝 구동을 위한 8단계 하프스텝 테이블 
 // 한 행은 스텝 1단계, 각 열은 IN1 ~ IN4
@@ -73,13 +74,11 @@ void loop() {
 
 	if(cnt == 10){
 		cnt = 0;
-		inpIR();
 		warning();
 		while(adc1 < 200 || adc2 < 200){
-			inpIR();
+			inpIR();serialPrint(adc1, adc2);
 			RL = (adc2-adc1)<0 ? -1:1;
 			rotateDegrees(RL*10);
-			serialPrint(adc1, adc2);
 		}	
 	}
 
@@ -87,8 +86,11 @@ void loop() {
 }
 
 void inpIR(){
-	adc1 = mmPrint(analogRead(pinIR));	
-	adc2 = mmPrint(analogRead(pinIR2));
+	raw_adc1 = analogRead(pinIR);
+	raw_adc2 = analogRead(pinIR2)
+
+	adc1 = mmPrint(raw_adc1);	
+	adc2 = mmPrint(raw_adc2);
 }
 
 // 1스텝 회전을 실행하는 함수 
@@ -136,24 +138,35 @@ void warning(){
 }
 
 // 거리센서 아날로그값을 mm 단위 로 변환하는 함수 
-double mmPrint(int x){
-	int t = x - 11.0;
-	if (t < 15) return 200; 
-  double distanceCM = 2076.0 / t;// cm 변환 수식
-	
-	if (distanceCM < 4) distanceCM = 4;
-	if (distanceCM > 20) distanceCM = 20;
-	double distanceMM = distanceCM * 10.0;
 
-	return distanceMM;
+double mmPrint(int x){ // x: 측정된 ADC 값
+  
+  // 1. 최대 거리 고정 (200mm 이상)
+  // ADC가 115 미만이면 (계산상 200mm 초과) 무조건 200mm로 고정
+  if (x < 115) {
+      return 200.0; 
+  }
+
+  // 2. 거리 변환 (x는 115 이상이므로 t는 104 이상)
+  double t = (double)x - 11.0; 
+  double distanceCM = 2076.0 / t; // cm 변환 수식
+  
+  // 3. 최소 거리 고정 (40mm 이하)
+  if (distanceCM < 4.0) {
+      return 40.0; // 4cm -> 40mm
+  }
+
+  // 4. 최종 변환 및 반환 (200mm를 초과하는 값은 이미 위에서 걸러졌으므로 불필요)
+  double distanceMM = distanceCM * 10.0;
+  return distanceMM;
 }
 
 // 거리센서 값을 adc, V, mm 형태로 Serial출력
 void serialPrint(int p1, int p2){
 	Serial.print("ADC: "); 
-	Serial.print(analogRead(pinIR)); 
+	Serial.print(raw_adc1); 
 	Serial.print(", "); 
-	Serial.print(analogRead(pinIR2));
+	Serial.print(raw_adc2);
 	Serial.print("\tDistance: "); 
 	Serial.print((double)p1, 1); 
 	Serial.print(", "); 

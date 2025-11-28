@@ -61,23 +61,25 @@ void setup() {
 
 void loop() {
 	
-	int RL; inpIR();
+	int RL, cnt = 0; inpIR();
 	serialPrint(adc1, adc2);
 	
 	// 로직구현 좌회전 + 우회전 -
-	
 	if(adc1 < 200 || adc2 < 200){
-		delay(1000);
+		cnt++;
+	}else{
+		cnt = 0;
+	}
+
+	if(cnt == 10){
 		inpIR();
-		if(adc1 < 200 || adc2 < 200){
-			warning();
-			while(adc1 < 200 || adc2 < 200){
-				inpIR();
-				RL = (adc2-adc1)<0 ? -1:1;
-				rotateDegrees(RL*10);
-				serialPrint(adc1, adc2);
-			}	
-		}
+		warning();
+		while(adc1 < 200 || adc2 < 200){
+			inpIR();
+			RL = (adc2-adc1)<0 ? -1:1;
+			rotateDegrees(RL*10);
+			serialPrint(adc1, adc2);
+		}	
 	}
 
 	delay(100);

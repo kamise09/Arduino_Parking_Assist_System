@@ -12,7 +12,7 @@ const int IN3 = 11;
 const int IN4 = 12;
 
 // adc 
-int adc1 = 300, adc2 = 300 ;
+int adc1 = 200, adc2 = 200, cnt = 0;
 
 // 스텝 구동을 위한 8단계 하프스텝 테이블 
 // 한 행은 스텝 1단계, 각 열은 IN1 ~ IN4
@@ -61,7 +61,7 @@ void setup() {
 
 void loop() {
 	
-	int RL, cnt = 0; inpIR();
+	int RL; inpIR();
 	serialPrint(adc1, adc2);
 	
 	// 로직구현 좌회전 + 우회전 -
@@ -72,6 +72,7 @@ void loop() {
 	}
 
 	if(cnt == 10){
+		cnt = 0;
 		inpIR();
 		warning();
 		while(adc1 < 200 || adc2 < 200){
@@ -158,4 +159,6 @@ void serialPrint(int p1, int p2){
 	Serial.print(", "); 
 	Serial.print((double)p2, 1);
 	Serial.println(" mm");
+	Serial.println("    ");
+	Serial.println(cnt);
 }

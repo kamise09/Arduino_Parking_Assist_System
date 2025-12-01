@@ -54,6 +54,7 @@ void setup() {
 	pinMode(IN2, OUTPUT);
 	pinMode(IN3, OUTPUT);
 	pinMode(IN4, OUTPUT);
+	adc1 = 200; adc2 = 200;
 
 	disableCoils(); // 코일 초기화
 	Serial.begin(115200); // Serial 통신속도 설정
@@ -61,10 +62,9 @@ void setup() {
 }
 
 void loop() {
-	
 	int RL; inpIR();
 	serialPrint(adc1, adc2);
-	
+
 	// 로직구현 좌회전 + 우회전 -
 	if(adc1 < 200 || adc2 < 200){
 		cnt++;
@@ -72,13 +72,13 @@ void loop() {
 		cnt = 0;
 	}
 
-	if(cnt == 10){
+	if(cnt == 20){
 		cnt = 0;
 		warning();
 		while(adc1 < 200 || adc2 < 200){
-			inpIR();serialPrint(adc1, adc2);
 			RL = (adc2-adc1)<0 ? -1:1;
 			rotateDegrees(RL*10);
+			inpIR();serialPrint(adc1, adc2);
 		}	
 	}
 
@@ -87,7 +87,7 @@ void loop() {
 
 void inpIR(){
 	raw_adc1 = analogRead(pinIR);
-	raw_adc2 = analogRead(pinIR2)
+	raw_adc2 = analogRead(pinIR2);
 
 	adc1 = mmPrint(raw_adc1);	
 	adc2 = mmPrint(raw_adc2);

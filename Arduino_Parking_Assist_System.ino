@@ -94,8 +94,7 @@ void loop() {
 			}
 			rlSave = RL;
 			if(cnt2 == 5) break;
-			delay(100);
-		}	
+		}
 	}
 
 	delay(100);

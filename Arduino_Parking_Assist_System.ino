@@ -12,7 +12,7 @@ const int IN3 = 11;
 const int IN4 = 12;
 
 // adc 
-int adc1 = 200, adc2 = 200, cnt = 0;
+int adc1 = 200, adc2 = 200, cnt = 0, cnt2 = 0, rlSave = 1;
 int raw_adc1, raw_adc2;
 
 // 스텝 구동을 위한 8단계 하프스텝 테이블 
@@ -72,13 +72,20 @@ void loop() {
 		cnt = 0;
 	}
 
-	if(cnt == 20){
+	if(cnt == 30){
 		cnt = 0;
 		warning();
 		while(adc1 < 200 || adc2 < 200){
 			RL = (adc2-adc1)<0 ? -1:1;
 			rotateDegrees(RL*10);
 			inpIR();serialPrint(adc1, adc2);
+			if(RL != rlSave){
+				cnt2++;
+			}else{
+				cnt2 = 0;
+			}
+			rlSave = RL;
+			if(cnt2 == 5) break;
 		}	
 	}
 

@@ -12,7 +12,8 @@ const int IN3 = 11;
 const int IN4 = 12;
 
 // adc 
-int adc1 = 200, adc2 = 200, cnt = 0, cnt2 = 0, rlSave = 1;
+int adc1 = 200, adc2 = 200, cnt = 0, cnt2 = 0;
+int rlSave = 1, clkSave = 0, clk = 0, status = 0;
 int raw_adc1, raw_adc2;
 
 // 스텝 구동을 위한 8단계 하프스텝 테이블 
@@ -62,7 +63,7 @@ void setup() {
 }
 
 void loop() {
-	int RL; inpIR();
+	int RL; inpIR(); clk = 0; status = 0;
 	serialPrint(adc1, adc2);
 
 	// 로직구현 좌회전 + 우회전 -
@@ -76,16 +77,24 @@ void loop() {
 		cnt = 0; cnt2 = 0;
 		warning();
 		while(adc1 < 200 || adc2 < 200){
-			RL = (adc2-adc1)<0 ? -1:1;
+			RL = (adc2-adc1)<0 ? -1:1; clk ++;
 			rotateDegrees(RL*10);
 			inpIR();serialPrint(adc1, adc2);
 			if(RL != rlSave){
-				cnt2++;
+				if(status == 0){
+					status = 1;
+					cnt2++; clkSave = clk;
+				}else if(status == 1){
+					if((clk - clkSave) <= 10){
+						cnt2++; clkSave = clk;
+					}
+				}
 			}else{
 				cnt2 = 0;
 			}
 			rlSave = RL;
 			if(cnt2 == 5) break;
+			delay(100);
 		}	
 	}
 

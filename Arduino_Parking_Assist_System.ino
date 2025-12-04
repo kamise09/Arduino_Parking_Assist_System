@@ -73,7 +73,7 @@ void loop() {
 	}
 
 	if(cnt == 30){
-		cnt = 0;
+		cnt = 0; cnt2 = 0;
 		warning();
 		while(adc1 < 200 || adc2 < 200){
 			RL = (adc2-adc1)<0 ? -1:1;
